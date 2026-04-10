@@ -1,0 +1,1401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HYDRONEXT AI Dashboard</title>
+
+  <style>
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+    }
+
+    :root{
+      --bg1:#020617;
+      --bg2:#0f172a;
+      --bg3:#111827;
+      --card:rgba(15,23,42,0.82);
+      --line:rgba(148,163,184,0.14);
+      --text:#e2e8f0;
+      --muted:#94a3b8;
+      --blue:#38bdf8;
+      --blue2:#7dd3fc;
+      --green:#22c55e;
+      --green2:#86efac;
+      --red:#ef4444;
+      --red2:#fca5a5;
+      --yellow:#facc15;
+    }
+
+    body{
+      font-family:"Segoe UI", Arial, sans-serif;
+      min-height:100vh;
+      color:var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(14,165,233,0.16), transparent 26%),
+        radial-gradient(circle at top right, rgba(34,197,94,0.16), transparent 22%),
+        linear-gradient(135deg,var(--bg1),var(--bg2),var(--bg3));
+      padding:24px 16px;
+    }
+
+    .container{
+      max-width:1500px;
+      margin:auto;
+    }
+
+    .header{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:18px;
+      flex-wrap:wrap;
+      padding:22px 24px;
+      border-radius:28px;
+      margin-bottom:22px;
+      background:rgba(15,23,42,0.76);
+      border:1px solid var(--line);
+      box-shadow:0 18px 40px rgba(0,0,0,0.35);
+      backdrop-filter:blur(12px);
+    }
+
+    .title-box h1{
+      font-size:clamp(24px, 4vw, 36px);
+      color:var(--blue);
+      margin-bottom:8px;
+      letter-spacing:1px;
+      line-height:1.2;
+    }
+
+    .title-box p{
+      color:#cbd5e1;
+      font-size:clamp(14px, 2vw, 16px);
+      line-height:1.5;
+    }
+
+    .header-right{
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+
+    .badge{
+      padding:11px 16px;
+      border-radius:999px;
+      font-size:13px;
+      font-weight:800;
+      color:white;
+      box-shadow:0 8px 18px rgba(0,0,0,0.25);
+      white-space:nowrap;
+    }
+
+    .badge-blue{
+      background:linear-gradient(135deg,#0284c7,#38bdf8);
+    }
+
+    .badge-green{
+      background:linear-gradient(135deg,#15803d,#22c55e);
+    }
+
+    .top-grid{
+      display:grid;
+      grid-template-columns:1fr;
+      gap:22px;
+      margin-bottom:22px;
+    }
+
+    .card{
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius:24px;
+      padding:22px;
+      box-shadow:0 14px 32px rgba(0,0,0,0.28);
+      backdrop-filter:blur(10px);
+      min-width:0;
+    }
+
+    .card-title{
+      font-size:20px;
+      color:var(--blue2);
+      margin-bottom:18px;
+      font-weight:800;
+      letter-spacing:0.5px;
+    }
+
+    button{
+      border:none;
+      padding:14px 22px;
+      border-radius:16px;
+      color:white;
+      font-size:15px;
+      font-weight:800;
+      cursor:pointer;
+      transition:0.25s ease;
+      box-shadow:0 10px 24px rgba(0,0,0,0.25);
+    }
+
+    button:hover{
+      transform:translateY(-2px) scale(1.02);
+    }
+
+    .start{
+      background:linear-gradient(135deg,#16a34a,#22c55e);
+    }
+
+    .stop{
+      background:linear-gradient(135deg,#dc2626,#ef4444);
+    }
+
+    .pump{
+      font-size:50px;
+      line-height:1;
+    }
+
+    .spin{
+      animation:spin 1s linear infinite;
+    }
+
+    @keyframes spin{
+      from{transform:rotate(0deg);}
+      to{transform:rotate(360deg);}
+    }
+
+    .smart-control-card{
+      position:relative;
+      overflow:hidden;
+      background:
+        radial-gradient(circle at top left, rgba(56,189,248,0.11), transparent 30%),
+        radial-gradient(circle at bottom right, rgba(34,197,94,0.10), transparent 28%),
+        linear-gradient(145deg, rgba(15,23,42,0.95), rgba(2,6,23,0.96));
+      border:1px solid rgba(96,165,250,0.18);
+      box-shadow:
+        0 22px 46px rgba(0,0,0,0.33),
+        inset 0 1px 0 rgba(255,255,255,0.03);
+    }
+
+    .smart-control-card::before{
+      content:"";
+      position:absolute;
+      top:0;
+      left:0;
+      width:100%;
+      height:4px;
+      background:linear-gradient(90deg,#38bdf8,#22c55e,#38bdf8);
+    }
+
+    .smart-header{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:15px;
+      flex-wrap:wrap;
+      margin-bottom:22px;
+    }
+
+    .smart-title{
+      font-size:clamp(20px, 2.5vw, 26px);
+      font-weight:900;
+      color:#f8fafc;
+      letter-spacing:1px;
+    }
+
+    .smart-subtitle{
+      margin-top:6px;
+      color:var(--muted);
+      font-size:14px;
+      line-height:1.5;
+    }
+
+    .live-chip{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      padding:10px 16px;
+      border-radius:999px;
+      background:rgba(15,23,42,0.95);
+      border:1px solid rgba(56,189,248,0.18);
+      color:var(--blue2);
+      font-size:13px;
+      font-weight:800;
+      box-shadow:0 6px 18px rgba(0,0,0,0.18);
+      white-space:nowrap;
+    }
+
+    .live-dot{
+      width:10px;
+      height:10px;
+      border-radius:50%;
+      background:var(--green);
+      box-shadow:0 0 12px var(--green);
+      animation:pulseDot 1.4s infinite;
+    }
+
+    @keyframes pulseDot{
+      0%{transform:scale(1); opacity:1;}
+      50%{transform:scale(1.25); opacity:0.65;}
+      100%{transform:scale(1); opacity:1;}
+    }
+
+    .smart-main-grid{
+      display:grid;
+      grid-template-columns:220px 1fr;
+      gap:22px;
+      align-items:stretch;
+    }
+
+    .smart-left-panel{
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      align-items:center;
+      gap:22px;
+      padding:22px 18px;
+      border-radius:22px;
+      background:linear-gradient(180deg, rgba(30,41,59,0.80), rgba(15,23,42,0.94));
+      border:1px solid var(--line);
+      box-shadow:inset 0 0 30px rgba(56,189,248,0.04);
+      min-width:0;
+    }
+
+    .pump-hub{
+      position:relative;
+      width:150px;
+      height:150px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      flex-shrink:0;
+    }
+
+    .pump-ring{
+      position:absolute;
+      border-radius:50%;
+      border:1px solid rgba(56,189,248,0.18);
+    }
+
+    .ring1{
+      width:150px;
+      height:150px;
+      animation:rotateSlow 10s linear infinite;
+    }
+
+    .ring2{
+      width:112px;
+      height:112px;
+      border-style:dashed;
+      border-color:rgba(34,197,94,0.25);
+      animation:rotateSlowReverse 8s linear infinite;
+    }
+
+    @keyframes rotateSlow{
+      from{transform:rotate(0deg);}
+      to{transform:rotate(360deg);}
+    }
+
+    @keyframes rotateSlowReverse{
+      from{transform:rotate(360deg);}
+      to{transform:rotate(0deg);}
+    }
+
+    .pump-core{
+      width:88px;
+      height:88px;
+      border-radius:50%;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      background:linear-gradient(135deg, rgba(14,165,233,0.22), rgba(34,197,94,0.18));
+      border:1px solid rgba(56,189,248,0.28);
+      box-shadow:
+        inset 0 0 22px rgba(255,255,255,0.04),
+        0 0 25px rgba(56,189,248,0.12);
+      z-index:2;
+    }
+
+    .smart-buttons{
+      width:100%;
+      display:grid;
+      gap:14px;
+    }
+
+    .smart-btn{
+      width:100%;
+    }
+
+    .smart-right-panel{
+      display:flex;
+      flex-direction:column;
+      gap:18px;
+      min-width:0;
+    }
+
+    .advanced-status-box{
+      position:relative;
+      overflow:hidden;
+      padding:20px;
+      border-radius:22px;
+      background:
+        radial-gradient(circle at top right, rgba(56,189,248,0.08), transparent 35%),
+        radial-gradient(circle at bottom left, rgba(34,197,94,0.07), transparent 30%),
+        linear-gradient(145deg, rgba(30,41,59,0.95), rgba(15,23,42,0.95));
+      border:1px solid rgba(96,165,250,0.14);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.03),
+        0 8px 24px rgba(0,0,0,0.16);
+      min-width:0;
+    }
+
+    .advanced-status-box::before{
+      content:"";
+      position:absolute;
+      top:0;
+      left:0;
+      width:100%;
+      height:3px;
+      background:linear-gradient(90deg,#38bdf8,#22c55e,#38bdf8);
+    }
+
+    .status-top-line{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-bottom:18px;
+    }
+
+    .status-main-label{
+      font-size:13px;
+      font-weight:900;
+      letter-spacing:1.4px;
+      color:var(--blue2);
+    }
+
+    .status-sub-label{
+      margin-top:4px;
+      font-size:13px;
+      color:var(--muted);
+      line-height:1.4;
+    }
+
+    .network-pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:10px 14px;
+      border-radius:999px;
+      background:rgba(15,23,42,0.9);
+      color:var(--green2);
+      border:1px solid rgba(34,197,94,0.18);
+      font-size:13px;
+      font-weight:800;
+      white-space:nowrap;
+    }
+
+    .network-pulse{
+      width:10px;
+      height:10px;
+      border-radius:50%;
+      background:var(--green);
+      box-shadow:0 0 12px var(--green);
+      animation:networkBlink 1.3s infinite;
+    }
+
+    @keyframes networkBlink{
+      0%{transform:scale(1); opacity:1;}
+      50%{transform:scale(1.3); opacity:0.6;}
+      100%{transform:scale(1); opacity:1;}
+    }
+
+    .status-center-panel{
+      padding:18px;
+      border-radius:20px;
+      background:linear-gradient(145deg, rgba(15,23,42,0.92), rgba(30,41,59,0.88));
+      border:1px solid rgba(148,163,184,0.10);
+      margin-bottom:18px;
+      min-width:0;
+    }
+
+    .status-display{
+      display:inline-flex;
+      align-items:center;
+      gap:12px;
+      padding:14px 20px;
+      border-radius:18px;
+      font-size:clamp(18px, 3vw, 22px);
+      font-weight:900;
+      margin-bottom:16px;
+      box-shadow:0 10px 26px rgba(0,0,0,0.18);
+      flex-wrap:wrap;
+      max-width:100%;
+    }
+
+    .status-display .status-icon{
+      font-size:24px;
+      line-height:1;
+    }
+
+    .status-display.running{
+      background:linear-gradient(135deg, rgba(22,163,74,0.22), rgba(34,197,94,0.14));
+      color:var(--green2);
+      border:1px solid rgba(34,197,94,0.28);
+    }
+
+    .status-display.idle{
+      background:linear-gradient(135deg, rgba(100,116,139,0.22), rgba(71,85,105,0.14));
+      color:#cbd5e1;
+      border:1px solid rgba(148,163,184,0.24);
+    }
+
+    .status-display.online{
+      background:linear-gradient(135deg, rgba(37,99,235,0.22), rgba(56,189,248,0.14));
+      color:#93c5fd;
+      border:1px solid rgba(96,165,250,0.25);
+    }
+
+    .status-display.offline{
+      background:linear-gradient(135deg, rgba(220,38,38,0.20), rgba(239,68,68,0.14));
+      color:var(--red2);
+      border:1px solid rgba(248,113,113,0.28);
+    }
+
+    .stage-hero{
+      font-size:clamp(26px, 4vw, 42px);
+      font-weight:900;
+      color:#f8fafc;
+      line-height:1.2;
+      word-break:break-word;
+    }
+
+    .quick-stats-grid{
+      display:grid;
+      grid-template-columns:repeat(4, minmax(0,1fr));
+      gap:14px;
+    }
+
+    .premium-stat{
+      padding:18px 14px;
+      border-radius:18px;
+      background:linear-gradient(145deg, rgba(15,23,42,0.98), rgba(30,41,59,0.90));
+      border:1px solid rgba(148,163,184,0.10);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.02),
+        0 8px 18px rgba(0,0,0,0.12);
+      text-align:center;
+      transition:0.3s ease;
+      min-width:0;
+    }
+
+    .premium-stat:hover{
+      transform:translateY(-5px) scale(1.01);
+    }
+
+    .quick-label{
+      color:var(--muted);
+      font-size:13px;
+      margin-bottom:8px;
+    }
+
+    .quick-value{
+      color:#f8fafc;
+      font-size:clamp(18px, 2.2vw, 24px);
+      font-weight:900;
+      line-height:1.25;
+      white-space:normal;
+      word-break:break-word;
+      overflow-wrap:anywhere;
+    }
+
+    .full-metrics-box{
+      padding:20px;
+      border-radius:22px;
+      background:linear-gradient(145deg, rgba(15,23,42,0.96), rgba(30,41,59,0.90));
+      border:1px solid rgba(148,163,184,0.10);
+      box-shadow:
+        0 12px 24px rgba(0,0,0,0.15),
+        inset 0 1px 0 rgba(255,255,255,0.02);
+    }
+
+    .full-metrics-title{
+      font-size:20px;
+      font-weight:800;
+      color:#7dd3fc;
+      margin-bottom:16px;
+    }
+
+    .metrics{
+      display:grid;
+      grid-template-columns:repeat(4, minmax(0,1fr));
+      gap:16px;
+    }
+
+    .metric{
+      position:relative;
+      overflow:hidden;
+      border-radius:20px;
+      padding:18px;
+      background:linear-gradient(135deg, rgba(30,41,59,0.96), rgba(15,23,42,0.92));
+      border:1px solid rgba(148,163,184,0.12);
+      min-width:0;
+    }
+
+    .metric::before{
+      content:"";
+      position:absolute;
+      left:0;
+      top:0;
+      width:100%;
+      height:3px;
+      background:linear-gradient(90deg,#38bdf8,#22c55e);
+    }
+
+    .metric-label{
+      font-size:14px;
+      color:var(--muted);
+      margin-bottom:8px;
+    }
+
+    .metric-value{
+      font-size:clamp(24px, 3vw, 30px);
+      font-weight:900;
+      color:#f8fafc;
+      word-break:break-word;
+    }
+
+    .metric-unit{
+      font-size:14px;
+      color:var(--blue2);
+      margin-left:4px;
+    }
+
+    .field-card{
+      padding-bottom:30px;
+    }
+
+    .pipeline-zone{
+      margin-top:24px;
+      position:relative;
+    }
+
+    .main-pipeline{
+      width:100%;
+      height:28px;
+      border-radius:999px;
+      background:linear-gradient(90deg,#1e293b,#334155);
+      border:1px solid rgba(148,163,184,0.14);
+      overflow:hidden;
+      position:relative;
+      margin-bottom:34px;
+    }
+
+    .pipeline-liquid{
+      position:absolute;
+      inset:0;
+      opacity:0;
+      background:linear-gradient(90deg, transparent, rgba(56,189,248,0.4), transparent);
+      animation:pipeMove 1.1s linear infinite;
+    }
+
+    .main-pipeline.active .pipeline-liquid{
+      opacity:1;
+    }
+
+    @keyframes pipeMove{
+      0%{ transform:translateX(-100%); }
+      100%{ transform:translateX(100%); }
+    }
+
+    .sections-wrap{
+      display:grid;
+      grid-template-columns:repeat(4, minmax(0,1fr));
+      gap:22px;
+      position:relative;
+    }
+
+    .section-col{
+      position:relative;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      min-width:0;
+    }
+
+    .connector{
+      width:18px;
+      height:58px;
+      border-radius:999px;
+      background:linear-gradient(180deg,#334155,#1e293b);
+      border:1px solid rgba(148,163,184,0.12);
+      position:relative;
+      overflow:hidden;
+      margin-top:-34px;
+      margin-bottom:6px;
+      z-index:2;
+    }
+
+    .connector-flow{
+      position:absolute;
+      inset:0;
+      background:linear-gradient(180deg, transparent, rgba(56,189,248,0.4), transparent);
+      animation:downFlow 1s linear infinite;
+      opacity:0;
+    }
+
+    .connector.active .connector-flow{
+      opacity:1;
+    }
+
+    @keyframes downFlow{
+      0%{ transform:translateY(-100%); }
+      100%{ transform:translateY(100%); }
+    }
+
+    .section{
+      width:100%;
+      max-width:280px;
+      height:320px;
+      position:relative;
+      border-radius:22px;
+      overflow:hidden;
+      background:linear-gradient(180deg, rgba(30,41,59,0.96), rgba(15,23,42,0.96));
+      border:1px solid rgba(148,163,184,0.15);
+      box-shadow:0 14px 30px rgba(0,0,0,0.28);
+      transition:0.3s ease;
+    }
+
+    .section:hover{
+      transform:translateY(-6px);
+      box-shadow:0 20px 38px rgba(0,0,0,0.34);
+    }
+
+    .section-header{
+      position:absolute;
+      top:0;
+      left:0;
+      width:100%;
+      padding:15px 16px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      z-index:6;
+      background:linear-gradient(180deg, rgba(2,6,23,0.95), rgba(2,6,23,0.45), transparent);
+    }
+
+    .section-label{
+      font-size:16px;
+      font-weight:800;
+      color:#f8fafc;
+    }
+
+    .sensor-wrap{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      font-size:12px;
+      color:#cbd5e1;
+    }
+
+    .sensor{
+      width:15px;
+      height:15px;
+      border-radius:50%;
+      background:#64748b;
+      transition:0.3s;
+    }
+
+    .sensor.active{
+      background:var(--green);
+      box-shadow:0 0 14px var(--green);
+    }
+
+    .gate{
+      width:86%;
+      height:14px;
+      position:absolute;
+      top:58px;
+      left:7%;
+      border-radius:999px;
+      background:linear-gradient(90deg,#ef4444,#f87171);
+      transform-origin:left center;
+      transition:0.45s ease;
+      z-index:7;
+      box-shadow:0 0 10px rgba(239,68,68,0.35);
+    }
+
+    .open{
+      transform:rotate(-18deg) translateY(-4px);
+      background:linear-gradient(90deg,#16a34a,#22c55e);
+      box-shadow:0 0 14px rgba(34,197,94,0.45);
+    }
+
+    .water-fill{
+      position:absolute;
+      left:0;
+      bottom:0;
+      width:100%;
+      height:0%;
+      background:
+        linear-gradient(180deg, rgba(125,211,252,0.22), rgba(14,165,233,0.9)),
+        linear-gradient(90deg,#0ea5e9,#38bdf8,#0ea5e9);
+      background-size:100% 100%, 220% 100%;
+      transition:height 1s ease;
+      z-index:1;
+      overflow:hidden;
+    }
+
+    .flowing{
+      animation:waterFlow 1.1s linear infinite;
+    }
+
+    @keyframes waterFlow{
+      0%{ background-position:0 0, 0 0; }
+      100%{ background-position:0 0, 180px 0; }
+    }
+
+    .wave{
+      position:absolute;
+      top:10px;
+      left:-20%;
+      width:140%;
+      height:18px;
+      background:rgba(255,255,255,0.18);
+      border-radius:50%;
+      filter:blur(2px);
+      animation:waveMove 2.2s linear infinite;
+    }
+
+    @keyframes waveMove{
+      0%{ transform:translateX(-20px); }
+      50%{ transform:translateX(20px); }
+      100%{ transform:translateX(-20px); }
+    }
+
+    .section-status{
+      position:absolute;
+      bottom:16px;
+      left:50%;
+      transform:translateX(-50%);
+      width:86%;
+      text-align:center;
+      padding:11px 12px;
+      border-radius:12px;
+      font-size:14px;
+      font-weight:800;
+      color:var(--text);
+      background:rgba(2,6,23,0.58);
+      border:1px solid rgba(255,255,255,0.08);
+      backdrop-filter:blur(6px);
+      z-index:8;
+    }
+
+    .section-top-status{
+      position:absolute;
+      top:88px;
+      left:50%;
+      transform:translateX(-50%);
+      width:84%;
+      text-align:center;
+      padding:9px 10px;
+      border-radius:10px;
+      font-size:13px;
+      font-weight:800;
+      color:#cbd5e1;
+      background:rgba(15,23,42,0.7);
+      border:1px solid rgba(148,163,184,0.1);
+      z-index:8;
+    }
+
+    .legend{
+      display:flex;
+      justify-content:center;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-top:24px;
+    }
+
+    .legend-item{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      padding:10px 14px;
+      border-radius:999px;
+      background:rgba(15,23,42,0.7);
+      border:1px solid rgba(148,163,184,0.12);
+      color:#cbd5e1;
+      font-size:14px;
+    }
+
+    .dot{
+      width:12px;
+      height:12px;
+      border-radius:50%;
+    }
+
+    .blue-dot{ background:var(--blue); }
+    .green-dot{ background:var(--green); }
+    .red-dot{ background:var(--red); }
+    .gray-dot{ background:#64748b; }
+
+    .popup{
+      display:none;
+      position:fixed;
+      top:50%;
+      left:50%;
+      transform:translate(-50%,-50%);
+      background:linear-gradient(135deg,#16a34a,#22c55e);
+      color:white;
+      padding:28px 36px;
+      border-radius:20px;
+      font-size:24px;
+      font-weight:900;
+      box-shadow:0 25px 60px rgba(0,0,0,0.35);
+      z-index:2000;
+      animation:popupShow 0.35s ease;
+      text-align:center;
+    }
+
+    @keyframes popupShow{
+      from{ transform:translate(-50%,-50%) scale(0.82); opacity:0; }
+      to{ transform:translate(-50%,-50%) scale(1); opacity:1; }
+    }
+
+    @media (max-width:1100px){
+      .smart-main-grid{
+        grid-template-columns:1fr;
+      }
+
+      .quick-stats-grid{
+        grid-template-columns:repeat(2, minmax(0,1fr));
+      }
+
+      .metrics{
+        grid-template-columns:repeat(2, minmax(0,1fr));
+      }
+
+      .sections-wrap{
+        grid-template-columns:repeat(2, minmax(0,1fr));
+      }
+
+      .smart-left-panel{
+        order:1;
+      }
+
+      .smart-right-panel{
+        order:2;
+      }
+    }
+
+    @media (max-width:700px){
+      body{
+        padding:16px 10px;
+      }
+
+      .header, .card{
+        padding:18px 16px;
+      }
+
+      .metrics{
+        grid-template-columns:1fr;
+      }
+
+      .quick-stats-grid{
+        grid-template-columns:1fr;
+      }
+
+      .sections-wrap{
+        grid-template-columns:1fr;
+      }
+
+      .section{
+        max-width:100%;
+      }
+
+      .connector{
+        display:none;
+      }
+
+      .main-pipeline{
+        display:none;
+      }
+
+      .pump-hub{
+        width:148px;
+        height:148px;
+      }
+
+      .ring1{
+        width:148px;
+        height:148px;
+      }
+
+      .ring2{
+        width:108px;
+        height:108px;
+      }
+
+      .status-display{
+        width:100%;
+        justify-content:center;
+      }
+
+      .stage-hero{
+        font-size:34px;
+      }
+
+      .network-pill,
+      .live-chip{
+        white-space:normal;
+      }
+      
+    }
+
+  </style>
+</head>
+<body>
+
+  <div class="container">
+
+    <div class="header">
+      <div class="title-box">
+        <h1>🚰 HYDRONEXT_AI CONTROL PANEL</h1>
+        <p>🌾 Automated Canal Irrigation Monitoring and Smart Water Gate Distribution System</p>
+      </div>
+
+      <div class="header-right">
+        <div class="badge badge-blue">SMART WATER FLOW</div>
+        <div class="badge badge-green">AUTO GATE CONTROL</div>
+      </div>
+    </div>
+
+    <div class="top-grid">
+
+      <div class="card smart-control-card">
+        <div class="smart-header">
+          <div>
+            <div class="smart-title">SMART CONTROL CENTRE</div>
+            <div class="smart-subtitle">Real-time irrigation command and automation panel</div>
+          </div>
+          <div class="live-chip">
+            <span class="live-dot"></span> LIVE
+          </div>
+        </div>
+
+        <div class="smart-main-grid">
+
+          <div class="smart-left-panel">
+            <div class="pump-hub">
+              <div class="pump-ring ring1"></div>
+              <div class="pump-ring ring2"></div>
+              <div class="pump-core">
+                <div id="pumpIcon" class="pump">⚙️</div>
+              </div>
+            </div>
+
+            <div class="smart-buttons">
+              <div class="smart-buttons">
+
+  <button class="start smart-btn" onclick="fetch('/auto_on')">
+    ▶ START AUTO
+  </button>
+
+  <button class="stop smart-btn" onclick="fetch('/auto_off')">
+    ■ STOP SYSTEM
+  </button>
+
+  <hr style="border:1px solid rgba(255,255,255,0.1);margin:10px 0;">
+
+  <button class="smart-btn" onclick="fetch('/pump_on')">
+    💧 Pump ON
+  </button>
+
+  <button class="smart-btn" onclick="fetch('/pump_off')">
+    🛑 Pump OFF
+  </button>
+
+  <button class="smart-btn" onclick="fetch('/gate1_open')">
+    Gate 1 OPEN
+  </button>
+
+  <button class="smart-btn" onclick="fetch('/gate1_close')">
+    Gate 1 CLOSE
+  </button>
+
+  <button class="smart-btn" onclick="fetch('/gate2_open')">
+    Gate 2 OPEN
+  </button>
+
+  <button class="smart-btn" onclick="fetch('/gate2_close')">
+    Gate 2 CLOSE
+  </button>
+
+  <button class="smart-btn" onclick="fetch('/gate3_open')">
+    Gate 3 OPEN
+  </button>
+
+  <button class="smart-btn" onclick="fetch('/gate3_close')">
+    Gate 3 CLOSE
+  </button>
+
+  <button class="smart-btn" onclick="fetch('/gate4_open')">
+    Gate 4 OPEN
+  </button>
+
+  <button class="smart-btn" onclick="fetch('/gate4_close')">
+    Gate 4 CLOSE
+  </button>
+
+</div>
+            </div>
+          </div>
+
+          <div class="smart-right-panel">
+            <div class="advanced-status-box">
+              <div class="status-top-line">
+                <div class="status-title-wrap">
+                  <div class="status-main-label">SYSTEM STATUS</div>
+                  <div class="status-sub-label">Real-time irrigation controller state</div>
+                </div>
+
+                <div class="network-pill">
+                  <span class="network-pulse"></span>
+                  Network Stable
+                </div>
+              </div>
+
+              <div class="status-center-panel">
+                <div id="systemStatus" class="status-display idle">
+                  <span class="status-icon">⏸</span>
+                  <span class="status-text">IDLE</span>
+                </div>
+
+                <div id="stage" class="stage-hero">Current Stage : -</div>
+              </div>
+
+              <div class="quick-stats-grid">
+                <div class="premium-stat">
+                  <div class="quick-label">Mode</div>
+                  <div class="quick-value" id="modeText">MANUAL</div>
+                </div>
+
+                <div class="premium-stat">
+                  <div class="quick-label">Pump</div>
+                  <div class="quick-value" id="pumpStateText">OFF</div>
+                </div>
+
+                <div class="premium-stat">
+                  <div class="quick-label">Completed</div>
+                  <div class="quick-value"><span id="completedSections">0</span>/4</div>
+                </div>
+
+                <div class="premium-stat">
+                  <div class="quick-label">Controller</div>
+                  <div class="quick-value">ACTIVE</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="full-metrics-box">
+              <div class="full-metrics-title">Live Water Analytics</div>
+
+              <div class="metrics">
+                <div class="metric">
+                  <div class="metric-label">Flow Rate</div>
+                  <div class="metric-value"><span id="flowRate">0</span><span class="metric-unit">L/min</span></div>
+                </div>
+
+                <div class="metric">
+                  <div class="metric-label">Total Water Used</div>
+                  <div class="metric-value"><span id="totalLiters">0</span><span class="metric-unit">Liters</span></div>
+                </div>
+
+                <div class="metric">
+                  <div class="metric-label">Field Progress</div>
+                  <div class="metric-value"><span id="progressPercent">0</span><span class="metric-unit">%</span></div>
+                </div>
+
+                <div class="metric">
+                  <div class="metric-label">Active Section</div>
+                  <div class="metric-value"><span id="activeSection">0</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+
+    <div class="card field-card">
+      <div class="card-title">Connected Field Irrigation Network</div>
+
+      <div class="pipeline-zone">
+        <div id="mainPipeline" class="main-pipeline">
+          <div class="pipeline-liquid"></div>
+        </div>
+
+        <div class="sections-wrap">
+
+          <div class="section-col">
+            <div id="connector1" class="connector">
+              <div class="connector-flow"></div>
+            </div>
+            <div class="section">
+              <div class="section-header">
+                <div class="section-label">Section 1</div>
+                <div class="sensor-wrap">
+                  Sensor <div id="sensor1" class="sensor"></div>
+                </div>
+              </div>
+              <div id="gate1" class="gate"></div>
+              <div id="topStatus1" class="section-top-status">Gate Closed</div>
+              <div id="fill1" class="water-fill">
+                <div class="wave"></div>
+              </div>
+              <div id="status1" class="section-status">Waiting for water</div>
+            </div>
+          </div>
+
+          <div class="section-col">
+            <div id="connector2" class="connector">
+              <div class="connector-flow"></div>
+            </div>
+            <div class="section">
+              <div class="section-header">
+                <div class="section-label">Section 2</div>
+                <div class="sensor-wrap">
+                  Sensor <div id="sensor2" class="sensor"></div>
+                </div>
+              </div>
+              <div id="gate2" class="gate"></div>
+              <div id="topStatus2" class="section-top-status">Gate Closed</div>
+              <div id="fill2" class="water-fill">
+                <div class="wave"></div>
+              </div>
+              <div id="status2" class="section-status">Waiting for water</div>
+            </div>
+          </div>
+
+          <div class="section-col">
+            <div id="connector3" class="connector">
+              <div class="connector-flow"></div>
+            </div>
+            <div class="section">
+              <div class="section-header">
+                <div class="section-label">Section 3</div>
+                <div class="sensor-wrap">
+                  Sensor <div id="sensor3" class="sensor"></div>
+                </div>
+              </div>
+              <div id="gate3" class="gate"></div>
+              <div id="topStatus3" class="section-top-status">Gate Closed</div>
+              <div id="fill3" class="water-fill">
+                <div class="wave"></div>
+              </div>
+              <div id="status3" class="section-status">Waiting for water</div>
+            </div>
+          </div>
+
+          <div class="section-col">
+            <div id="connector4" class="connector">
+              <div class="connector-flow"></div>
+            </div>
+            <div class="section">
+              <div class="section-header">
+                <div class="section-label">Section 4</div>
+                <div class="sensor-wrap">
+                  Sensor <div id="sensor4" class="sensor"></div>
+                </div>
+              </div>
+              <div id="gate4" class="gate"></div>
+              <div id="topStatus4" class="section-top-status">Gate Closed</div>
+              <div id="fill4" class="water-fill">
+                <div class="wave"></div>
+              </div>
+              <div id="status4" class="section-status">Waiting for water</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="legend">
+        <div class="legend-item"><div class="dot blue-dot"></div> Water Flow</div>
+        <div class="legend-item"><div class="dot green-dot"></div> Active Gate / Sensor</div>
+        <div class="legend-item"><div class="dot red-dot"></div> Closed Gate</div>
+        <div class="legend-item"><div class="dot gray-dot"></div> Waiting State</div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="popup" id="completePopup">
+    ✅ Irrigation Completed Successfully!
+  </div>
+
+  <script>
+    let lastStage = 0;
+    let offlineTimer;
+
+    async function update(){
+      try{
+        const res = await fetch('/get_data');
+        const data = await res.json();
+        console.log("DATA RECEIVED:", data );
+
+        if(data.status == "online"){
+          const statusEl = document.getElementById("systemStatus");
+          statusEl.innerHTML ='<span class="status-icon">📡</span><span class="status-text">ONLINE</span>';
+          statusEl.className = "status-display online";
+        }
+        
+        clearTimeout(offlineTimer);
+
+        offlineTimer = setTimeout(() => {
+          const statusEl = document.getElementById("systemStatus");
+          statusEl.innerHTML =
+            '<span class="status-icon">⚠</span><span class="status-text">OFFLINE</span>';
+          statusEl.className = "status-display offline";
+        }, 8000);
+
+        const pump = document.getElementById("pumpIcon");
+        const pumpText = document.getElementById("pumpStateText");
+        const modeText = document.getElementById("modeText");
+        const pipeline = document.getElementById("mainPipeline");
+
+        if(data.pump){
+          pump.classList.add("spin");
+          pumpText.innerText = "ON";
+          pumpText.style.color = "#22c55e";
+          pipeline.classList.add("active");
+        }else{
+          pump.classList.remove("spin");
+          pumpText.innerText = "OFF";
+          pumpText.style.color = "#f87171";
+          pipeline.classList.remove("active");
+        }
+
+        if(data.auto == 1){
+          modeText.innerText = "AUTO";
+          modeText.style.color = "#22c55e";
+        }else{
+          modeText.innerText = "MANUAL";
+          modeText.style.color = "#facc15";
+        }
+
+        document.getElementById("stage").innerText = "Current Stage : Section " + data.stage;
+        document.getElementById("flowRate").innerText = Number(data.flowRate || 0).toFixed(2);
+        document.getElementById("totalLiters").innerText = Number(data.totalLiters || 0).toFixed(2);
+        document.getElementById("completedSections").innerText = data.stage || 0;
+
+        const percent = ((data.stage || 0) / 4) * 100;
+        document.getElementById("progressPercent").innerText = percent;
+        document.getElementById("activeSection").innerText = data.stage > 0 ? data.stage : 0;
+
+        const statusBox = document.getElementById("systemStatus");
+
+        if(data.status === "online"){
+
+          if(data.auto == 1 && data.pump == 1){
+            statusBox.innerHTML ='<span class="status-icon">▶</span><span class="status-text">RUNNING</span>';
+            statusBox.className = "status-display running";
+          }
+
+          else if(data.auto == 0 && data.pump == 0){
+            statusBox.innerHTML ='<span class="status-icon">⏸</span><span class="status-text">IDLE</span>';
+            statusBox.className = "status-display idle";
+          }       
+
+          else{
+          statusBox.innerHTML ='<span class="status-icon">📡</span><span class="status-text">ONLINE</span>';
+          statusBox.className = "status-display online";
+          }
+
+        }
+        else{
+          statusBox.innerHTML ='<span class="status-icon">⚠</span><span class="status-text">OFFLINE</span>';
+          statusBox.className = "status-display offline";
+        }
+        
+
+        const fills = document.querySelectorAll(".water-fill");
+        if(data.pump){
+          fills.forEach(f => f.classList.add("flowing"));
+        }else{
+          fills.forEach(f => f.classList.remove("flowing"));
+        }
+
+        if(lastStage == 3 && data.stage == 4){
+          document.getElementById("completePopup").style.display = "block";
+          setTimeout(() => {
+            document.getElementById("completePopup").style.display = "none";
+          }, 3000);
+        }
+
+        lastStage = data.stage;
+
+        updateSection(1, data.stage, data.auto);
+        updateSection(2, data.stage, data.auto);
+        updateSection(3, data.stage, data.auto);
+        updateSection(4, data.stage, data.auto);
+
+      }catch(error){
+        const statusEl = document.getElementById("systemStatus");
+        if(statusEl){
+          statusEl.innerHTML =
+            '<span class="status-icon">⚠</span><span class="status-text">OFFLINE</span>';
+          statusEl.className = "status-display offline";
+        }
+      }
+    }
+
+    function updateSection(sectionNumber, stage, autoMode){
+      const fill = document.getElementById("fill" + sectionNumber);
+      const gate = document.getElementById("gate" + sectionNumber);
+      const status = document.getElementById("status" + sectionNumber);
+      const topStatus = document.getElementById("topStatus" + sectionNumber);
+      const sensor = document.getElementById("sensor" + sectionNumber);
+      const connector = document.getElementById("connector" + sectionNumber);
+
+      if(autoMode == 1){
+        if(stage > sectionNumber){
+          fill.style.height = "100%";
+          gate.classList.remove("open");
+          sensor.classList.add("active");
+          connector.classList.add("active");
+          topStatus.innerText = "Gate Closed";
+          status.innerText = "Completed - Water reached sensor";
+        }
+        else if(stage == sectionNumber){
+          fill.style.height = "100%";
+          gate.classList.add("open");
+          sensor.classList.add("active");
+          connector.classList.add("active");
+          topStatus.innerText = "Gate Open";
+          status.innerText = "Currently Irrigating";
+        }
+        else{
+          fill.style.height = "0%";
+          gate.classList.remove("open");
+          sensor.classList.remove("active");
+          connector.classList.remove("active");
+          topStatus.innerText = "Gate Closed";
+          status.innerText = "Waiting for water";
+        }
+      }else{
+        fill.style.height = "0%";
+        gate.classList.remove("open");
+        sensor.classList.remove("active");
+        connector.classList.remove("active");
+        topStatus.innerText = "Gate Closed";
+        status.innerText = "Waiting for water";
+      }
+    }
+
+    setInterval(update, 1500);
+    update();
+  </script>
+
+</body>
+</html>
